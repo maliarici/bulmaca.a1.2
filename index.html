@@ -30,26 +30,29 @@
     }
 
     main {
-      max-width: 1240px;
-      margin: 10px auto;
-      padding: 10px;
+      min-height: 100vh;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
-      padding: 10px;
+      padding: 14px;
       border: 2px solid var(--ink);
       background: #fff8e8;
     }
 
     .controls {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -63,11 +66,11 @@
       border: 2px solid var(--ink);
       background: #fff8e8;
       color: var(--ink);
-      padding: 8px 12px;
+      padding: 9px 13px;
       cursor: pointer;
       font-family: Georgia, "Times New Roman", serif;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     button:hover:not(:disabled) {
@@ -85,7 +88,7 @@
     }
 
     .check-badge {
-      min-width: 36px;
+      min-width: 38px;
       border: 2px solid var(--ink);
       background: #777;
       color: white;
@@ -93,7 +96,7 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 17px;
     }
 
     #showBtn {
@@ -102,40 +105,45 @@
 
     .score {
       font-weight: bold;
-      font-size: 17px;
+      font-size: 18px;
     }
 
     .layout {
+      flex: 1;
+      min-height: 0;
       display: grid;
-      grid-template-columns: 500px 1fr;
-      gap: 12px;
-      align-items: start;
+      grid-template-columns: 560px 1fr;
+      gap: 18px;
+      align-items: stretch;
     }
 
     .box {
       border: 2px solid var(--ink);
       background: #fff8e8;
-      padding: 10px;
+      padding: 18px;
+      height: 100%;
     }
 
-    .grid-wrap {
-      overflow-x: auto;
+    .puzzle-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
     }
 
     #grid {
       display: grid;
-      grid-template-columns: repeat(15, 30px);
-      grid-template-rows: repeat(13, 30px);
+      grid-template-columns: repeat(15, 34px);
+      grid-template-rows: repeat(13, 34px);
       justify-content: center;
-      margin: auto;
       width: max-content;
       border: 2px solid var(--ink);
       background: var(--block);
     }
 
     .cell {
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       background: var(--cell);
       border: 1px solid var(--line);
       position: relative;
@@ -149,8 +157,8 @@
     .num {
       position: absolute;
       top: 1px;
-      left: 2px;
-      font-size: 8px;
+      left: 3px;
+      font-size: 9px;
       font-weight: bold;
       line-height: 1;
       color: var(--ink);
@@ -163,15 +171,15 @@
       border: none;
       background: transparent;
       text-align: center;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: bold;
       text-transform: uppercase;
       font-family: Arial, sans-serif;
-      padding-top: 7px;
+      padding-top: 8px;
     }
 
     input:focus {
-      outline: 2px solid var(--accent);
+      outline: 3px solid var(--accent);
       background: var(--focus);
     }
 
@@ -186,29 +194,30 @@
     .clues {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 22px;
+      overflow: auto;
     }
 
     h2 {
-      margin: 0 0 8px;
-      padding-bottom: 5px;
+      margin: 0 0 12px;
+      padding-bottom: 6px;
       border-bottom: 2px solid var(--ink);
-      font-size: 19px;
+      font-size: 22px;
     }
 
     .clue-list {
       display: grid;
-      gap: 4px;
+      gap: 8px;
     }
 
     .clue {
       display: grid;
-      grid-template-columns: 28px 1fr;
-      gap: 6px;
-      font-size: 14px;
-      line-height: 1.25;
+      grid-template-columns: 34px 1fr;
+      gap: 8px;
+      font-size: 15.5px;
+      line-height: 1.35;
       cursor: pointer;
-      padding: 2px 0;
+      padding: 3px 0;
     }
 
     .clue:hover {
@@ -224,43 +233,21 @@
       background: var(--focus);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 950px) {
+      main {
+        min-height: auto;
+      }
+
       .layout {
         grid-template-columns: 1fr;
+      }
+
+      .box {
+        height: auto;
       }
 
       .clues {
         grid-template-columns: 1fr;
-      }
-    }
-
-    @media print {
-      body {
-        background: white;
-      }
-
-      main {
-        max-width: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .top {
-        margin-bottom: 8px;
-        padding: 6px;
-      }
-
-      button {
-        display: none;
-      }
-
-      .layout {
-        grid-template-columns: 470px 1fr;
-        gap: 8px;
-      }
-
-      .box {
-        padding: 8px;
       }
 
       #grid {
@@ -274,11 +261,12 @@
       }
 
       input {
-        font-size: 14px;
+        font-size: 15px;
+        padding-top: 7px;
       }
 
-      .clue {
-        font-size: 12.5px;
+      .num {
+        font-size: 8px;
       }
     }
   </style>
@@ -301,10 +289,8 @@
     </section>
 
     <section class="layout">
-      <div class="box">
-        <div class="grid-wrap">
-          <div id="grid"></div>
-        </div>
+      <div class="box puzzle-box">
+        <div id="grid"></div>
       </div>
 
       <div class="box clues">
