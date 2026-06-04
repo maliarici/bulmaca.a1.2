@@ -9,7 +9,7 @@
     :root {
       --paper: #f4efe4;
       --ink: #222;
-      --block: #1f1f1f;
+      --block: #6f665b;
       --line: #555;
       --cell: #fffaf0;
       --accent: #8b5e34;
