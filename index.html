@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulmaca</title>
 
-  <link rel="icon" href="./turkey.ico?v=2" type="image/x-icon">
+  <link rel="icon" href="./turkey.ico?v=7" type="image/x-icon">
 
   <style>
     :root {
@@ -88,7 +88,7 @@
 
     .check-badge {
       width: 42px;
-      min-width: 42px;
+      height: 41px;
       border: 2px solid var(--ink);
       background: #777;
       color: white;
@@ -112,7 +112,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 560px 1fr;
+      grid-template-columns: 520px 1fr;
       gap: 18px;
       align-items: start;
     }
@@ -121,7 +121,7 @@
       border: 2px solid var(--ink);
       background: #fff8e8;
       padding: 18px;
-      height: 486px;
+      height: 580px;
     }
 
     .puzzle-box {
@@ -133,16 +133,16 @@
 
     #grid {
       display: grid;
-      grid-template-columns: repeat(15, 34px);
-      grid-template-rows: repeat(13, 34px);
+      grid-template-columns: repeat(13, 30px);
+      grid-template-rows: repeat(18, 30px);
       width: max-content;
       border: 2px solid var(--ink);
       background: var(--block);
     }
 
     .cell {
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       background: var(--cell);
       border: 1px solid var(--line);
       position: relative;
@@ -157,7 +157,7 @@
       position: absolute;
       top: 1px;
       left: 3px;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: bold;
       line-height: 1;
       color: var(--ink);
@@ -170,15 +170,15 @@
       border: none;
       background: transparent;
       text-align: center;
-      font-size: 19px;
+      font-size: 16px;
       font-weight: bold;
       text-transform: uppercase;
       font-family: Arial, sans-serif;
-      padding-top: 8px;
+      padding-top: 7px;
     }
 
     input:focus {
-      outline: 3px solid var(--accent);
+      outline: 2px solid var(--accent);
       background: var(--focus);
     }
 
@@ -246,22 +246,22 @@
       }
 
       #grid {
-        grid-template-columns: repeat(15, 28px);
-        grid-template-rows: repeat(13, 28px);
+        grid-template-columns: repeat(13, 26px);
+        grid-template-rows: repeat(18, 26px);
       }
 
       .cell {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
       }
 
       input {
-        font-size: 15px;
-        padding-top: 7px;
+        font-size: 14px;
+        padding-top: 6px;
       }
 
       .num {
-        font-size: 8px;
+        font-size: 7px;
       }
     }
   </style>
@@ -303,8 +303,8 @@
   </main>
 
   <script>
-    const ROWS = 13;
-    const COLS = 15;
+    const ROWS = 18;
+    const COLS = 13;
     const MAX_CHECKS = 3;
 
     let checksLeft = MAX_CHECKS;
@@ -312,21 +312,27 @@
     let gameFrozen = false;
 
     const words = [
-      { word: "ŞUBAT", row: 0, col: 6, dir: "down", clue: "İkinci ay." },
-      { word: "ÇAY", row: 2, col: 10, dir: "across", clue: "Sıcak bir içecek." },
-      { word: "YARIN", row: 2, col: 12, dir: "down", clue: "Bugünden bir gün sonra." },
-      { word: "ANAHTAR", row: 3, col: 1, dir: "across", clue: "Kapıyı açan küçük araç." },
-      { word: "NEVŞEHİR", row: 3, col: 2, dir: "down", clue: "Kapadokya o şehirde." },
-      { word: "MUTFAK", row: 3, col: 14, dir: "down", clue: "O odada yemek yapıyoruz." },
-      { word: "ŞEMSİYE", row: 6, col: 2, dir: "across", clue: "Yağmurda bizi korur." },
-      { word: "SINIF", row: 6, col: 10, dir: "across", clue: "Ders yaptığımız oda." },
-      { word: "SENE", row: 6, col: 10, dir: "down", clue: "Yıl." },
-      { word: "HAVALİMANI", row: 8, col: 2, dir: "across", clue: "Uçağa bindiğimiz yer." },
-      { word: "MUZ", row: 8, col: 8, dir: "down", clue: "Sarı bir meyve." },
-      { word: "FARE", row: 10, col: 0, dir: "across", clue: "Küçük bir hayvan." },
-      { word: "TEYZE", row: 10, col: 5, dir: "across", clue: "Annenin kız kardeşi." },
-      { word: "YAZ", row: 10, col: 7, dir: "down", clue: "En sıcak mevsim." },
-      { word: "PAZARTESİ", row: 12, col: 5, dir: "across", clue: "Haftanın ilk günü." }
+      { word: "TEYZE", row: 0, col: 4, dir: "down", clue: "Annenin kız kardeşi." },
+      { word: "ŞEMSİYE", row: 0, col: 6, dir: "down", clue: "Yağmurda onu kullanıyoruz." },
+
+      { word: "SENE", row: 1, col: 3, dir: "across", clue: "Yıl." },
+      { word: "MUZ", row: 2, col: 6, dir: "across", clue: "Sarı bir meyve." },
+
+      { word: "ŞUBAT", row: 4, col: 10, dir: "down", clue: "İkinci ay." },
+      { word: "YAZ", row: 5, col: 1, dir: "down", clue: "En sıcak mevsim." },
+      { word: "ÇAY", row: 5, col: 3, dir: "down", clue: "Sıcak bir içecek." },
+
+      { word: "PAZARTESİ", row: 6, col: 0, dir: "across", clue: "Haftanın ilk günü." },
+      { word: "SINIF", row: 6, col: 7, dir: "down", clue: "Orada ders yapıyoruz." },
+      { word: "YARIN", row: 6, col: 12, dir: "down", clue: "Bugünden bir gün sonra." },
+
+      { word: "ANAHTAR", row: 8, col: 6, dir: "across", clue: "Kapıyı açmak için kullanıyoruz." },
+      { word: "HAVALİMANI", row: 8, col: 9, dir: "down", clue: "Orada uçağa biniyoruz." },
+
+      { word: "FARE", row: 10, col: 4, dir: "down", clue: "Küçük bir hayvan." },
+
+      { word: "NEVŞEHİR", row: 13, col: 3, dir: "across", clue: "Kapadokya o şehirde." },
+      { word: "MUTFAK", row: 15, col: 5, dir: "across", clue: "O odada yemek yapıyoruz." }
     ];
 
     const solution = {};
@@ -452,7 +458,9 @@
       const word = words.find(item => item.id === id);
 
       word.cells.forEach(key => {
-        cellMap[key].classList.add("active");
+        if (cellMap[key]) {
+          cellMap[key].classList.add("active");
+        }
       });
     }
 
@@ -527,10 +535,8 @@
 
       colorTimer = setTimeout(() => {
         clearCheckColors();
-
         checksLeft--;
         updateCheckBadge();
-
         checkBtn.disabled = false;
       }, 5000);
     }
