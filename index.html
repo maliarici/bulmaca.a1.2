@@ -474,14 +474,9 @@
 
     function normalizeLetter(letter) {
       return letter
-        .toLocaleUpperCase("tr-TR")
-        .replaceAll("İ", "I")
-        .replaceAll("I", "I")
-        .replaceAll("Ç", "C")
-        .replaceAll("Ğ", "G")
-        .replaceAll("Ö", "O")
-        .replaceAll("Ş", "S")
-        .replaceAll("Ü", "U");
+        .trim()
+        .normalize("NFC")
+        .toLocaleUpperCase("tr-TR");
     }
 
     function clearCheckColors() {
