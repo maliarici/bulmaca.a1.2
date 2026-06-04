@@ -564,6 +564,9 @@
       clearTimeout(colorTimer);
       clearCheckColors();
 
+      const checkBtn = document.getElementById("checkBtn");
+      checkBtn.disabled = true;
+
       const inputs = document.querySelectorAll("input");
       let score = 0;
 
@@ -579,12 +582,10 @@
         }
       });
 
-      checksLeft--;
       updateScore(score);
-      updateCheckBadge();
 
       const isAllCorrect = score === inputs.length;
-      const isLastCheck = checksLeft === 0;
+      const isLastCheck = checksLeft === 1;
 
       if (isAllCorrect) {
         freezeGame();
@@ -592,6 +593,8 @@
       }
 
       if (isLastCheck) {
+        checksLeft--;
+        updateCheckBadge();
         freezeGame();
         document.getElementById("showBtn").style.display = "inline-block";
         return;
@@ -599,6 +602,11 @@
 
       colorTimer = setTimeout(() => {
         clearCheckColors();
+
+        checksLeft--;
+        updateCheckBadge();
+
+        checkBtn.disabled = false;
       }, 5000);
     }
 
