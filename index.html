@@ -29,24 +29,6 @@
       color: var(--ink);
     }
 
-    header {
-      text-align: center;
-      padding: 26px 16px 18px;
-      border-bottom: 4px double var(--ink);
-      background: #efe4d0;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 34px;
-      letter-spacing: 1px;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      font-size: 17px;
-    }
-
     main {
       max-width: 1150px;
       margin: 24px auto;
@@ -65,6 +47,18 @@
       background: #fff8e8;
     }
 
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .check-group {
+      display: inline-flex;
+      align-items: stretch;
+    }
+
     button {
       border: 2px solid var(--ink);
       background: #fff8e8;
@@ -76,9 +70,34 @@
       font-size: 15px;
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       background: var(--ink);
       color: white;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    #checkBtn {
+      border-right: none;
+    }
+
+    .check-badge {
+      min-width: 38px;
+      border: 2px solid var(--ink);
+      background: #777;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    #showBtn {
+      display: none;
     }
 
     .score {
@@ -111,7 +130,7 @@
       margin: auto;
       width: max-content;
       border: 2px solid var(--ink);
-      background: var(--ink);
+      background: var(--block);
     }
 
     .cell {
@@ -232,18 +251,15 @@
 </head>
 
 <body>
-  <header>
-    <h1>Türkçe A1.2 Kareli Bulmaca</h1>
-    <p>Soldan sağa ve yukarıdan aşağıya</p>
-  </header>
-
   <main>
     <section class="top">
-      <div><strong>Yönler:</strong> Soldan sağa → / Yukarıdan aşağıya ↓</div>
+      <div class="controls">
+        <div class="check-group">
+          <button id="checkBtn" onclick="checkAnswers()">Kontrol Et</button>
+          <div class="check-badge" id="checkBadge">3</div>
+        </div>
 
-      <div>
-        <button onclick="checkAnswers()">Kontrol Et</button>
-        <button onclick="showAnswers()">Cevapları Göster</button>
+        <button id="showBtn" onclick="showAnswers()">Cevapları Göster</button>
         <button onclick="resetPuzzle()">Temizle</button>
       </div>
 
@@ -259,12 +275,12 @@
 
       <div class="box clues">
         <div>
-          <h2>Soldan Sağa</h2>
+          <h2>Soldan Sağa →</h2>
           <div id="acrossClues" class="clue-list"></div>
         </div>
 
         <div>
-          <h2>Yukarıdan Aşağıya</h2>
+          <h2>Yukarıdan Aşağıya ↓</h2>
           <div id="downClues" class="clue-list"></div>
         </div>
       </div>
@@ -274,6 +290,11 @@
   <script>
     const ROWS = 13;
     const COLS = 15;
+    const MAX_CHECKS = 3;
+
+    let checksLeft = MAX_CHECKS;
+    let colorTimer = null;
+    let gameFrozen = false;
 
     const words = [
       {
@@ -409,7 +430,6 @@
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const key = `${r}-${c}`;
-
           const startsWord = words.some(word => word.row === r && word.col === c);
 
           if (solution[key] && startsWord) {
@@ -451,6 +471,8 @@
             input.dataset.key = key;
 
             input.addEventListener("input", () => {
+              if (gameFrozen) return;
+
               input.value = input.value
                 .slice(0, 1)
                 .toLocaleUpperCase("tr-TR");
@@ -467,6 +489,7 @@
       }
 
       updateScore(0);
+      updateCheckBadge();
     }
 
     function createClues() {
@@ -520,15 +543,33 @@
         .replaceAll("Ü", "U");
     }
 
+    function clearCheckColors() {
+      document.querySelectorAll("input").forEach(input => {
+        input.classList.remove("correct", "wrong");
+      });
+    }
+
+    function freezeGame() {
+      gameFrozen = true;
+      document.getElementById("checkBtn").disabled = true;
+
+      document.querySelectorAll("input").forEach(input => {
+        input.disabled = true;
+      });
+    }
+
     function checkAnswers() {
+      if (gameFrozen || checksLeft <= 0) return;
+
+      clearTimeout(colorTimer);
+      clearCheckColors();
+
       const inputs = document.querySelectorAll("input");
       let score = 0;
 
       inputs.forEach(input => {
         const user = normalizeLetter(input.value);
         const answer = normalizeLetter(input.dataset.answer);
-
-        input.classList.remove("correct", "wrong");
 
         if (user === answer) {
           input.classList.add("correct");
@@ -538,10 +579,32 @@
         }
       });
 
+      checksLeft--;
       updateScore(score);
+      updateCheckBadge();
+
+      const isAllCorrect = score === inputs.length;
+      const isLastCheck = checksLeft === 0;
+
+      if (isAllCorrect) {
+        freezeGame();
+        return;
+      }
+
+      if (isLastCheck) {
+        freezeGame();
+        document.getElementById("showBtn").style.display = "inline-block";
+        return;
+      }
+
+      colorTimer = setTimeout(() => {
+        clearCheckColors();
+      }, 5000);
     }
 
     function showAnswers() {
+      clearTimeout(colorTimer);
+
       const inputs = document.querySelectorAll("input");
 
       inputs.forEach(input => {
@@ -554,9 +617,12 @@
     }
 
     function resetPuzzle() {
+      clearTimeout(colorTimer);
+
       const inputs = document.querySelectorAll("input");
 
       inputs.forEach(input => {
+        input.disabled = false;
         input.value = "";
         input.classList.remove("correct", "wrong");
       });
@@ -565,12 +631,23 @@
         cell.classList.remove("active");
       });
 
+      checksLeft = MAX_CHECKS;
+      gameFrozen = false;
+
+      document.getElementById("checkBtn").disabled = false;
+      document.getElementById("showBtn").style.display = "none";
+
       updateScore(0);
+      updateCheckBadge();
     }
 
     function updateScore(score) {
       const total = document.querySelectorAll("input").length;
       document.getElementById("score").textContent = `Puan: ${score} / ${total}`;
+    }
+
+    function updateCheckBadge() {
+      document.getElementById("checkBadge").textContent = checksLeft;
     }
 
     placeWords();
