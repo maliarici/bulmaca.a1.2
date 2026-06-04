@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulmaca</title>
 
-  <link rel="icon" href="./turkey.ico?v=2" type="image/x-icon">
+  <link rel="icon" href="./turkey.ico?v=3" type="image/x-icon">
 
   <style>
     :root {
@@ -87,15 +87,18 @@
     }
 
     .check-badge {
-      min-width: 38px;
+      width: 42px;
+      height: 40px;
       border: 2px solid var(--ink);
       background: #777;
       color: white;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
       font-size: 17px;
+      line-height: 1;
+      padding: 0;
     }
 
     #showBtn {
@@ -421,9 +424,36 @@
       acrossBox.innerHTML = "";
       downBox.innerHTML = "";
 
-      const sorted = [...words].sort((a, b) => a.number - b.number);
+      const acrossOrder = [
+        "ÇAY",
+        "ANAHTAR",
+        "SINIF",
+        "FARE",
+        "ŞEMSİYE",
+        "TEYZE",
+        "HAVALİMANI",
+        "PAZARTESİ"
+      ];
 
-      sorted.forEach(word => {
+      const downOrder = [
+        "ŞUBAT",
+        "YARIN",
+        "NEVŞEHİR",
+        "MUTFAK",
+        "SENE",
+        "MUZ",
+        "YAZ"
+      ];
+
+      const acrossWords = words
+        .filter(word => word.dir === "across")
+        .sort((a, b) => acrossOrder.indexOf(a.word) - acrossOrder.indexOf(b.word));
+
+      const downWords = words
+        .filter(word => word.dir === "down")
+        .sort((a, b) => downOrder.indexOf(a.word) - downOrder.indexOf(b.word));
+
+      acrossWords.forEach(word => {
         const clue = document.createElement("div");
         clue.className = "clue";
         clue.onclick = () => highlightWord(word.id);
@@ -433,11 +463,20 @@
           <div>${word.clue}</div>
         `;
 
-        if (word.dir === "across") {
-          acrossBox.appendChild(clue);
-        } else {
-          downBox.appendChild(clue);
-        }
+        acrossBox.appendChild(clue);
+      });
+
+      downWords.forEach(word => {
+        const clue = document.createElement("div");
+        clue.className = "clue";
+        clue.onclick = () => highlightWord(word.id);
+
+        clue.innerHTML = `
+          <div class="clue-number">${word.number}</div>
+          <div>${word.clue}</div>
+        `;
+
+        downBox.appendChild(clue);
       });
     }
 
