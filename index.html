@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulmaca</title>
+
+  <link rel="icon" href="./turkey.ico?v=2" type="image/x-icon">
+
+  <style>
+    :root {
+      --paper: #f4efe4;
+      --ink: #222;
+      --block: #6f665b;
+      --line: #555;
+      --cell: #fffaf0;
+      --accent: #8b5e34;
+      --correct: #d9f2dd;
+      --wrong: #f8d4d4;
+      --focus: #fff1a8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    main {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding: 14px;
+      border: 2px solid var(--ink);
+      background: #fff8e8;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .check-group {
+      display: inline-flex;
+      align-items: stretch;
+    }
+
+    button {
+      border: 2px solid var(--ink);
+      background: #fff8e8;
+      color: var(--ink);
+      padding: 9px 13px;
+      cursor: pointer;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--ink);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    #checkBtn {
+      border-right: none;
+    }
+
+    .check-badge {
+      min-width: 38px;
+      border: 2px solid var(--ink);
+      background: #777;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    #showBtn {
+      display: none;
+    }
+
+    .score {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 560px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .box {
+      border: 2px solid var(--ink);
+      background: #fff8e8;
+      padding: 18px;
+      height: 486px;
+    }
+
+    .puzzle-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(15, 34px);
+      grid-template-rows: repeat(13, 34px);
+      width: max-content;
+      border: 2px solid var(--ink);
+      background: var(--block);
+    }
+
+    .cell {
+      width: 34px;
+      height: 34px;
+      background: var(--cell);
+      border: 1px solid var(--line);
+      position: relative;
+    }
+
+    .block {
+      background: var(--block);
+      border-color: var(--block);
+    }
+
+    .num {
+      position: absolute;
+      top: 1px;
+      left: 3px;
+      font-size: 9px;
+      font-weight: bold;
+      line-height: 1;
+      color: var(--ink);
+      z-index: 2;
+    }
+
+    input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 19px;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+      padding-top: 8px;
+    }
+
+    input:focus {
+      outline: 3px solid var(--accent);
+      background: var(--focus);
+    }
+
+    input.correct {
+      background: var(--correct);
+    }
+
+    input.wrong {
+      background: var(--wrong);
+    }
+
+    .clues {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      overflow: auto;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--ink);
+      font-size: 22px;
+    }
+
+    .clue-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .clue {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 8px;
+      font-size: 15.5px;
+      line-height: 1.35;
+      cursor: pointer;
+      padding: 3px 0;
+    }
+
+    .clue:hover {
+      background: #f2dfbd;
+    }
+
+    .clue-number {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .active {
+      background: var(--focus);
+    }
+
+    @media (max-width: 950px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .box {
+        height: auto;
+      }
+
+      .clues {
+        grid-template-columns: 1fr;
+      }
+
+      #grid {
+        grid-template-columns: repeat(15, 28px);
+        grid-template-rows: repeat(13, 28px);
+      }
+
+      .cell {
+        width: 28px;
+        height: 28px;
+      }
+
+      input {
+        font-size: 15px;
+        padding-top: 7px;
+      }
+
+      .num {
+        font-size: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section class="top">
+      <div class="controls">
+        <div class="check-group">
+          <button id="checkBtn" onclick="checkAnswers()">Kontrol Et</button>
+          <div class="check-badge" id="checkBadge">3</div>
+        </div>
+
+        <button id="showBtn" onclick="showAnswers()">Cevapları Göster</button>
+        <button onclick="resetPuzzle()">Temizle</button>
+      </div>
+
+      <div class="score" id="score">Puan: 0</div>
+    </section>
+
+    <section class="layout">
+      <div class="box puzzle-box">
+        <div id="grid"></div>
+      </div>
+
+      <div class="box clues">
+        <div>
+          <h2>Soldan Sağa →</h2>
+          <div id="acrossClues" class="clue-list"></div>
+        </div>
+
+        <div>
+          <h2>Yukarıdan Aşağıya ↓</h2>
+          <div id="downClues" class="clue-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const ROWS = 13;
+    const COLS = 15;
+    const MAX_CHECKS = 3;
+
+    let checksLeft = MAX_CHECKS;
+    let colorTimer = null;
+    let gameFrozen = false;
+
+    const words = [
+      { word: "ŞUBAT", row: 0, col: 6, dir: "down", clue: "İkinci ay." },
+      { word: "ÇAY", row: 2, col: 10, dir: "across", clue: "Sıcak bir içecek." },
+      { word: "YARIN", row: 2, col: 12, dir: "down", clue: "Bugünden bir gün sonra." },
+      { word: "ANAHTAR", row: 3, col: 1, dir: "across", clue: "Kapıyı açmak için kullanıyoruz." },
+      { word: "NEVŞEHİR", row: 3, col: 2, dir: "down", clue: "Kapadokya o şehirde." },
+      { word: "MUTFAK", row: 3, col: 14, dir: "down", clue: "O odada yemek yapıyoruz." },
+      { word: "ŞEMSİYE", row: 6, col: 2, dir: "across", clue: "Yağmurda onu kullanıyoruz." },
+      { word: "SINIF", row: 6, col: 10, dir: "across", clue: "Orada ders yapıyoruz." },
+      { word: "SENE", row: 6, col: 10, dir: "down", clue: "Yıl." },
+      { word: "HAVALİMANI", row: 8, col: 2, dir: "across", clue: "Orada uçağa biniyoruz." },
+      { word: "MUZ", row: 8, col: 8, dir: "down", clue: "Sarı bir meyve." },
+      { word: "FARE", row: 10, col: 0, dir: "across", clue: "Küçük bir hayvan." },
+      { word: "TEYZE", row: 10, col: 5, dir: "across", clue: "Annenin kız kardeşi." },
+      { word: "YAZ", row: 10, col: 7, dir: "down", clue: "En sıcak mevsim." },
+      { word: "PAZARTESİ", row: 12, col: 5, dir: "across", clue: "Haftanın ilk günü." }
+    ];
+
+    const solution = {};
+    const numbers = {};
+    const cellMap = {};
+
+    function placeWords() {
+      words.forEach((item, wordIndex) => {
+        item.id = "word-" + wordIndex;
+        item.cells = [];
+
+        [...item.word].forEach((letter, index) => {
+          const r = item.dir === "down" ? item.row + index : item.row;
+          const c = item.dir === "across" ? item.col + index : item.col;
+          const key = `${r}-${c}`;
+
+          solution[key] = letter;
+          item.cells.push(key);
+        });
+      });
+    }
+
+    function makeNumbers() {
+      let number = 1;
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const key = `${r}-${c}`;
+          const startsWord = words.some(word => word.row === r && word.col === c);
+
+          if (solution[key] && startsWord) {
+            numbers[key] = number;
+            number++;
+          }
+        }
+      }
+
+      words.forEach(word => {
+        word.number = numbers[`${word.row}-${word.col}`];
+      });
+    }
+
+    function createGrid() {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const key = `${r}-${c}`;
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.dataset.key = key;
+
+          if (!solution[key]) {
+            cell.classList.add("block");
+          } else {
+            if (numbers[key]) {
+              const num = document.createElement("span");
+              num.className = "num";
+              num.textContent = numbers[key];
+              cell.appendChild(num);
+            }
+
+            const input = document.createElement("input");
+            input.maxLength = 1;
+            input.dataset.answer = solution[key];
+            input.dataset.key = key;
+
+            input.addEventListener("input", () => {
+              if (gameFrozen) return;
+
+              input.value = input.value
+                .slice(0, 1)
+                .toLocaleUpperCase("tr-TR");
+
+              input.classList.remove("correct", "wrong");
+            });
+
+            cell.appendChild(input);
+          }
+
+          cellMap[key] = cell;
+          grid.appendChild(cell);
+        }
+      }
+
+      updateScore(0);
+      updateCheckBadge();
+    }
+
+    function createClues() {
+      const acrossBox = document.getElementById("acrossClues");
+      const downBox = document.getElementById("downClues");
+
+      acrossBox.innerHTML = "";
+      downBox.innerHTML = "";
+
+      const sorted = [...words].sort((a, b) => a.number - b.number);
+
+      sorted.forEach(word => {
+        const clue = document.createElement("div");
+        clue.className = "clue";
+        clue.onclick = () => highlightWord(word.id);
+
+        clue.innerHTML = `
+          <div class="clue-number">${word.number}</div>
+          <div>${word.clue}</div>
+        `;
+
+        if (word.dir === "across") {
+          acrossBox.appendChild(clue);
+        } else {
+          downBox.appendChild(clue);
+        }
+      });
+    }
+
+    function highlightWord(id) {
+      document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.remove("active");
+      });
+
+      const word = words.find(item => item.id === id);
+
+      word.cells.forEach(key => {
+        cellMap[key].classList.add("active");
+      });
+    }
+
+    function normalizeLetter(letter) {
+      return letter
+        .toLocaleUpperCase("tr-TR")
+        .replaceAll("İ", "I")
+        .replaceAll("I", "I")
+        .replaceAll("Ç", "C")
+        .replaceAll("Ğ", "G")
+        .replaceAll("Ö", "O")
+        .replaceAll("Ş", "S")
+        .replaceAll("Ü", "U");
+    }
+
+    function clearCheckColors() {
+      document.querySelectorAll("input").forEach(input => {
+        input.classList.remove("correct", "wrong");
+      });
+    }
+
+    function freezeGame() {
+      gameFrozen = true;
+      document.getElementById("checkBtn").disabled = true;
+
+      document.querySelectorAll("input").forEach(input => {
+        input.disabled = true;
+      });
+    }
+
+    function checkAnswers() {
+      if (gameFrozen || checksLeft <= 0) return;
+
+      clearTimeout(colorTimer);
+      clearCheckColors();
+
+      const checkBtn = document.getElementById("checkBtn");
+      checkBtn.disabled = true;
+
+      const inputs = document.querySelectorAll("input");
+      let score = 0;
+
+      inputs.forEach(input => {
+        const user = normalizeLetter(input.value);
+        const answer = normalizeLetter(input.dataset.answer);
+
+        if (user === answer) {
+          input.classList.add("correct");
+          score++;
+        } else {
+          input.classList.add("wrong");
+        }
+      });
+
+      updateScore(score);
+
+      const isAllCorrect = score === inputs.length;
+      const isLastCheck = checksLeft === 1;
+
+      if (isAllCorrect) {
+        freezeGame();
+        return;
+      }
+
+      if (isLastCheck) {
+        checksLeft--;
+        updateCheckBadge();
+        freezeGame();
+        document.getElementById("showBtn").style.display = "inline-block";
+        return;
+      }
+
+      colorTimer = setTimeout(() => {
+        clearCheckColors();
+
+        checksLeft--;
+        updateCheckBadge();
+
+        checkBtn.disabled = false;
+      }, 5000);
+    }
+
+    function showAnswers() {
+      clearTimeout(colorTimer);
+
+      const inputs = document.querySelectorAll("input");
+
+      inputs.forEach(input => {
+        input.value = input.dataset.answer;
+        input.classList.remove("wrong");
+        input.classList.add("correct");
+      });
+
+      updateScore(inputs.length);
+    }
+
+    function resetPuzzle() {
+      clearTimeout(colorTimer);
+
+      const inputs = document.querySelectorAll("input");
+
+      inputs.forEach(input => {
+        input.disabled = false;
+        input.value = "";
+        input.classList.remove("correct", "wrong");
+      });
+
+      document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.remove("active");
+      });
+
+      checksLeft = MAX_CHECKS;
+      gameFrozen = false;
+
+      document.getElementById("checkBtn").disabled = false;
+      document.getElementById("showBtn").style.display = "none";
+
+      updateScore(0);
+      updateCheckBadge();
+    }
+
+    function updateScore(score) {
+      const total = document.querySelectorAll("input").length;
+      document.getElementById("score").textContent = `Puan: ${score} / ${total}`;
+    }
+
+    function updateCheckBadge() {
+      document.getElementById("checkBadge").textContent = checksLeft;
+    }
+
+    placeWords();
+    makeNumbers();
+    createGrid();
+    createClues();
+  </script>
+</body>
+</html>
