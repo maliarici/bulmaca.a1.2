@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulmaca</title>
 
-  <link rel="icon" href="./turkey.ico?v=3" type="image/x-icon">
+  <link rel="icon" href="./turkey.ico?v=2" type="image/x-icon">
 
   <style>
     :root {
@@ -88,7 +88,7 @@
 
     .check-badge {
       width: 42px;
-      height: 40px;
+      min-width: 42px;
       border: 2px solid var(--ink);
       background: #777;
       color: white;
@@ -315,13 +315,13 @@
       { word: "ŞUBAT", row: 0, col: 6, dir: "down", clue: "İkinci ay." },
       { word: "ÇAY", row: 2, col: 10, dir: "across", clue: "Sıcak bir içecek." },
       { word: "YARIN", row: 2, col: 12, dir: "down", clue: "Bugünden bir gün sonra." },
-      { word: "ANAHTAR", row: 3, col: 1, dir: "across", clue: "Kapıyı açmak için kullanıyoruz." },
+      { word: "ANAHTAR", row: 3, col: 1, dir: "across", clue: "Kapıyı açan küçük araç." },
       { word: "NEVŞEHİR", row: 3, col: 2, dir: "down", clue: "Kapadokya o şehirde." },
       { word: "MUTFAK", row: 3, col: 14, dir: "down", clue: "O odada yemek yapıyoruz." },
-      { word: "ŞEMSİYE", row: 6, col: 2, dir: "across", clue: "Yağmurda onu kullanıyoruz." },
-      { word: "SINIF", row: 6, col: 10, dir: "across", clue: "Orada ders yapıyoruz." },
+      { word: "ŞEMSİYE", row: 6, col: 2, dir: "across", clue: "Yağmurda bizi korur." },
+      { word: "SINIF", row: 6, col: 10, dir: "across", clue: "Ders yaptığımız oda." },
       { word: "SENE", row: 6, col: 10, dir: "down", clue: "Yıl." },
-      { word: "HAVALİMANI", row: 8, col: 2, dir: "across", clue: "Orada uçağa biniyoruz." },
+      { word: "HAVALİMANI", row: 8, col: 2, dir: "across", clue: "Uçağa bindiğimiz yer." },
       { word: "MUZ", row: 8, col: 8, dir: "down", clue: "Sarı bir meyve." },
       { word: "FARE", row: 10, col: 0, dir: "across", clue: "Küçük bir hayvan." },
       { word: "TEYZE", row: 10, col: 5, dir: "across", clue: "Annenin kız kardeşi." },
@@ -424,36 +424,9 @@
       acrossBox.innerHTML = "";
       downBox.innerHTML = "";
 
-      const acrossOrder = [
-        "ÇAY",
-        "ANAHTAR",
-        "SINIF",
-        "FARE",
-        "ŞEMSİYE",
-        "TEYZE",
-        "HAVALİMANI",
-        "PAZARTESİ"
-      ];
+      const sorted = [...words].sort((a, b) => a.number - b.number);
 
-      const downOrder = [
-        "ŞUBAT",
-        "YARIN",
-        "NEVŞEHİR",
-        "MUTFAK",
-        "SENE",
-        "MUZ",
-        "YAZ"
-      ];
-
-      const acrossWords = words
-        .filter(word => word.dir === "across")
-        .sort((a, b) => acrossOrder.indexOf(a.word) - acrossOrder.indexOf(b.word));
-
-      const downWords = words
-        .filter(word => word.dir === "down")
-        .sort((a, b) => downOrder.indexOf(a.word) - downOrder.indexOf(b.word));
-
-      acrossWords.forEach(word => {
+      sorted.forEach(word => {
         const clue = document.createElement("div");
         clue.className = "clue";
         clue.onclick = () => highlightWord(word.id);
@@ -463,20 +436,11 @@
           <div>${word.clue}</div>
         `;
 
-        acrossBox.appendChild(clue);
-      });
-
-      downWords.forEach(word => {
-        const clue = document.createElement("div");
-        clue.className = "clue";
-        clue.onclick = () => highlightWord(word.id);
-
-        clue.innerHTML = `
-          <div class="clue-number">${word.number}</div>
-          <div>${word.clue}</div>
-        `;
-
-        downBox.appendChild(clue);
+        if (word.dir === "across") {
+          acrossBox.appendChild(clue);
+        } else {
+          downBox.appendChild(clue);
+        }
       });
     }
 
